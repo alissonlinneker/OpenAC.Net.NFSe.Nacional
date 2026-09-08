@@ -69,5 +69,20 @@ internal static class DocumentoExtensions
         return builder.ToString();
     }
 
+    public static string? SomenteNumeros(this string? valor)
+    {
+        if (valor == null) return null;
+
+        var builder = new StringBuilder(valor.Length);
+
+        foreach (var caractere in valor)
+        {
+            if (caractere is >= '0' and <= '9')
+                builder.Append(caractere);
+        }
+
+        return builder.ToString();
+    }
+
     #endregion Methods
 }

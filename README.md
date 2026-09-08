@@ -251,6 +251,43 @@ var provedor = manager.GetProvider(nfse.Configuracoes);
 
 ---
 
+## 🧾 Preenchimento automático do Tomador (CPF/CNPJ)
+
+Recurso **opcional** e desacoplado que monta o tomador da DPS a partir de um CPF ou CNPJ, consultando uma fonte de dados externa. Nada muda no fluxo de emissão de quem preenche o tomador manualmente: a configuração de certificado, schemas e webservices continua intacta.
+
+A abstração `IPessoaLookup` define a fonte de dados. A biblioteca já traz a implementação de referência `CpfCnpjComBrLookup`, que consulta a API da [CPF.CNPJ](https://www.cpfcnpj.com.br). O `TomadorResolver` transforma os dados normalizados em um `InfoPessoaNFSe` pronto para uso, com nome/razão social, endereço, código IBGE do município e CEP somente com dígitos.
+
+```csharp
+using OpenAC.Net.NFSe.Nacional.Tomador;
+
+// Token obtido no painel da CPF.CNPJ em API > Tokens (atrelado ao IP de origem).
+// O token público de testes 5ae973d7a997af13f0aaf2bf60e65803 devolve dados ficticios.
+using var lookup = new CpfCnpjComBrLookup("SEU_TOKEN");
+var resolver = new TomadorResolver(lookup);
+
+// Detecta automaticamente se o documento e CPF (11 digitos) ou CNPJ (14 posicoes).
+dps.Informacoes.Tomador = await resolver.PorDocumentoAsync("12.345.678/0001-95");
+
+// Tambem e possivel forcar o tipo:
+// dps.Informacoes.Tomador = await resolver.PorCpfAsync("111.111.111-11");
+// dps.Informacoes.Tomador = await resolver.PorCnpjAsync("12345678000195");
+```
+
+O `CpfCnpjComBrLookup` aceita um `HttpClient` reaproveitado, a escolha do pacote de consulta e uma URL base alternativa. O pacote padrão de CPF retorna o endereço completo e o de CNPJ retorna o endereço da matriz. Para preencher também Simples Nacional, situação cadastral e porte na consulta de CNPJ, informe o pacote com esses dados:
+
+```csharp
+using var lookup = new CpfCnpjComBrLookup("SEU_TOKEN", httpClient, pacoteCnpj: 6);
+var dados = await lookup.ConsultarCnpjAsync("12345678000195");
+
+// dados.SimplesNacional, dados.Situacao, dados.Porte disponiveis no pacote de CNPJ com esses campos.
+```
+
+Quando a consulta falha (documento inexistente, erro de comunicação ou resposta de erro da API), é lançada uma `OpenException`, seguindo o padrão de erros da biblioteca. Para usar outra origem de dados, basta implementar `IPessoaLookup` e passá-la ao `TomadorResolver`.
+
+**Sobre a CPF.CNPJ:** provedor brasileiro de dados cadastrais com informações atualizadas em **D+0** (mesmo dia) e **100% de cobertura** da base. O pacote de CNPJ com **Simples Nacional/SIMEI** informa a opção pelo regime, além de situação cadastral e porte da empresa.
+
+---
+
 ## 🤝 Como Contribuir
 
 Contribuições são muito bem-vindas! Se você deseja relatar um problema, sugerir melhorias ou enviar uma contribuição:
