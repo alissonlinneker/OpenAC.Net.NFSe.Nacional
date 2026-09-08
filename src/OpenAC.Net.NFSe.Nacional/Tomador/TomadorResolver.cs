@@ -82,14 +82,14 @@ public sealed class TomadorResolver
     /// <param name="cancellationToken">Token de cancelamento.</param>
     /// <returns>Tomador preenchido.</returns>
     /// <exception cref="OpenException">Quando o documento não tem 11 nem 14 posições.</exception>
-    public Task<InfoPessoaNFSe> PorDocumentoAsync(string documento, CancellationToken cancellationToken = default)
+    public async Task<InfoPessoaNFSe> PorDocumentoAsync(string documento, CancellationToken cancellationToken = default)
     {
         var normalizado = documento.SomenteAlfanumerico() ?? string.Empty;
 
         return normalizado.Length switch
         {
-            11 => PorCpfAsync(normalizado, cancellationToken),
-            14 => PorCnpjAsync(normalizado, cancellationToken),
+            11 => await PorCpfAsync(normalizado, cancellationToken).ConfigureAwait(false),
+            14 => await PorCnpjAsync(normalizado, cancellationToken).ConfigureAwait(false),
             _ => throw new OpenException("Documento inválido: informe um CPF com 11 dígitos ou um CNPJ com 14 posições.")
         };
     }
