@@ -38,8 +38,7 @@ public sealed class CpfCnpjComBrLookup : IPessoaLookup, IDisposable
     {
         var opcoes = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString
+            PropertyNameCaseInsensitive = true
         };
         opcoes.Converters.Add(new TextoFlexivelConverter());
         return opcoes;
@@ -216,6 +215,8 @@ public sealed class CpfCnpjComBrLookup : IPessoaLookup, IDisposable
 
     private sealed class RespostaCpf : RespostaBase
     {
+        public RespostaCpf() { }
+
         [JsonPropertyName("cpf")]
         public string? Cpf { get; set; }
 
@@ -249,6 +250,8 @@ public sealed class CpfCnpjComBrLookup : IPessoaLookup, IDisposable
 
     private sealed class RespostaCnpj : RespostaBase
     {
+        public RespostaCnpj() { }
+
         [JsonPropertyName("cnpj")]
         public string? Cnpj { get; set; }
 
@@ -276,6 +279,8 @@ public sealed class CpfCnpjComBrLookup : IPessoaLookup, IDisposable
 
     private sealed class MatrizEnderecoCnpj
     {
+        public MatrizEnderecoCnpj() { }
+
         [JsonPropertyName("cep")]
         public string? Cep { get; set; }
 
@@ -300,30 +305,40 @@ public sealed class CpfCnpjComBrLookup : IPessoaLookup, IDisposable
 
     private sealed class IbgeCnpj
     {
+        public IbgeCnpj() { }
+
         [JsonPropertyName("cidade")]
         public IbgeCidadeCnpj? Cidade { get; set; }
     }
 
     private sealed class IbgeCidadeCnpj
     {
+        public IbgeCidadeCnpj() { }
+
         [JsonPropertyName("ibge_id")]
         public string? IbgeId { get; set; }
     }
 
     private sealed class SimplesNacionalCnpj
     {
+        public SimplesNacionalCnpj() { }
+
         [JsonPropertyName("optante")]
         public string? Optante { get; set; }
     }
 
     private sealed class SituacaoCnpj
     {
+        public SituacaoCnpj() { }
+
         [JsonPropertyName("nome")]
         public string? Nome { get; set; }
     }
 
     private sealed class PorteCnpj
     {
+        public PorteCnpj() { }
+
         [JsonPropertyName("descricao")]
         public string? Descricao { get; set; }
     }
